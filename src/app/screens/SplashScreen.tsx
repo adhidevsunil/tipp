@@ -30,7 +30,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onNext }) => {
         </div>
 
         <h1 className="text-4xl font-bold tracking-tight mb-3 text-foreground">
-          TIP<span className="text-primary">.</span>
+          Tipzo<span className="text-primary">.</span>
         </h1>
         <p className="text-muted-foreground text-lg tracking-wide font-light">Gratitude made simple</p>
       </motion.div>

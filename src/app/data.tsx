@@ -1,5 +1,5 @@
 import { Waiter, PaymentMethod, Transaction } from './types';
-import { ScanLine, Smartphone, Wallet } from 'lucide-react';
+import { GooglePayIcon, PhonePeIcon, PaytmIcon } from './components/ui/PaymentIcons';
 import { v4 as uuidv4 } from 'uuid';
 
 // Initial Mock Data
@@ -110,19 +110,19 @@ export const paymentMethods: PaymentMethod[] = [
   {
     id: 'gpay',
     name: 'Google Pay',
-    icon: <Wallet className="w-6 h-6" />,
-    color: 'bg-blue-50 text-blue-600',
+    icon: <GooglePayIcon className="w-8 h-8" />,
+    color: 'bg-white text-gray-800 border-gray-100 hover:bg-gray-50',
   },
   {
     id: 'phonepe',
     name: 'PhonePe',
-    icon: <Smartphone className="w-6 h-6" />,
-    color: 'bg-purple-50 text-purple-600',
+    icon: <PhonePeIcon className="w-8 h-8" />,
+    color: 'bg-[#5F259F] text-white hover:bg-[#4d1e82]',
   },
   {
     id: 'paytm',
     name: 'Paytm',
-    icon: <ScanLine className="w-6 h-6" />,
-    color: 'bg-sky-50 text-sky-600',
+    icon: <PaytmIcon className="w-12 h-8" />, // Paytm logo is wider
+    color: 'bg-white text-[#002E6E] border-gray-100 hover:bg-gray-50',
   },
 ];
