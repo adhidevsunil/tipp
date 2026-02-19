@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2 } from 'lucide-react';
-import { Button } from '../components/ui/Button';
+import { Button } from '../components/ui/button';
 
 interface SuccessScreenProps {
   onDone: () => void;
@@ -33,7 +33,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ onDone, waiterName
   return (
     <div className="flex flex-col h-full items-center justify-center bg-background text-foreground relative overflow-hidden">
       <div className="absolute inset-0 bg-primary/10 pointer-events-none" />
-      
+
       <AnimatePresence>
         {showConfetti && (
           <motion.div
@@ -69,15 +69,15 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ onDone, waiterName
         )}
       </AnimatePresence>
 
-      <motion.div 
+      <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 20 }}
         className="bg-card rounded-3xl p-8 shadow-2xl border border-border flex flex-col items-center max-w-xs w-full z-10 relative"
       >
         <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
-        
-        <motion.div 
+
+        <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: "spring" }}
@@ -85,21 +85,21 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ onDone, waiterName
         >
           <CheckCircle2 className="w-10 h-10 text-primary" />
         </motion.div>
-        
+
         <h2 className="text-3xl font-bold text-foreground text-center mb-2 tracking-tight">Sent!</h2>
         <p className="text-muted-foreground text-center mb-8 text-sm leading-relaxed">
           Your appreciation has been shared with <span className="text-primary font-semibold block mt-1 text-lg">{waiterName}</span>
         </p>
-        
+
         <Button onClick={onDone} fullWidth size="lg" className="shadow-lg shadow-primary/20">
           Done
         </Button>
       </motion.div>
 
-      <motion.p 
+      <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        delay={1}
+        transition={{ delay: 1 }}
         className="absolute bottom-8 text-muted-foreground/50 text-xs font-mono tracking-widest uppercase"
       >
         ID: #TIP-{Math.floor(Math.random() * 1000000)}

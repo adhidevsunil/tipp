@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft, MessageSquarePlus } from 'lucide-react';
-import { Button } from '../components/ui/Button';
-import { Avatar } from '../components/ui/Avatar';
+import { Button } from '../components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import { Numpad } from '../components/ui/Numpad';
 import { Waiter } from '../types';
 
@@ -44,8 +44,8 @@ export const WaiterProfileScreen: React.FC<WaiterProfileScreenProps> = ({ waiter
 
       {/* Header */}
       <div className="flex items-center justify-between p-4 z-10">
-        <button 
-          onClick={onBack} 
+        <button
+          onClick={onBack}
           className="p-2 rounded-full bg-white/50 hover:bg-white/80 transition-colors text-foreground shadow-sm border border-border/50"
         >
           <ChevronLeft className="w-6 h-6" />
@@ -57,15 +57,22 @@ export const WaiterProfileScreen: React.FC<WaiterProfileScreenProps> = ({ waiter
       </div>
 
       <div className="flex-1 flex flex-col items-center px-6 z-10 pt-4 overflow-y-auto pb-[400px]"> {/* Large padding bottom to avoid overlap with fixed sheet */}
-        
+
         {/* Waiter Info - Minimal */}
-        <motion.div 
+        <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           className="flex flex-col items-center mb-8"
         >
-          <div className="p-1 rounded-full border-2 border-primary/20 mb-3 shadow-lg shadow-primary/5">
-            <Avatar src={waiter.imageUrl} alt={waiter.name} size="lg" className="border-2 border-white" />
+          <div className="absolute -bottom-16 left-1/2 -translate-x-1/2">
+            <div className="p-1.5 bg-background rounded-full shadow-xl">
+              <Avatar className="w-32 h-32 border-4 border-white shadow-sm">
+                <AvatarImage src={waiter.imageUrl} alt={waiter.name} className="object-cover" />
+                <AvatarFallback className="text-4xl bg-primary/10 text-primary">
+                  {waiter.name.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+            </div>
           </div>
           <h2 className="text-xl font-semibold text-foreground">{waiter.name}</h2>
           <p className="text-sm text-primary font-medium bg-primary/10 px-3 py-1 rounded-full mt-1">{waiter.role}</p>
@@ -73,7 +80,7 @@ export const WaiterProfileScreen: React.FC<WaiterProfileScreenProps> = ({ waiter
 
         {/* Amount Display */}
         <div className="flex flex-col items-center w-full mb-8">
-          <motion.div 
+          <motion.div
             key={amountStr}
             initial={{ scale: 0.95 }}
             animate={{ scale: 1 }}
@@ -84,7 +91,7 @@ export const WaiterProfileScreen: React.FC<WaiterProfileScreenProps> = ({ waiter
               {amountStr || '0'}
             </span>
           </motion.div>
-          
+
           {/* Add Note Button */}
           <button className="mt-4 flex items-center space-x-2 px-5 py-2.5 rounded-full bg-white border border-border shadow-sm text-sm font-medium text-muted-foreground hover:bg-muted/50 transition-colors">
             <MessageSquarePlus className="w-4 h-4" />
@@ -110,17 +117,17 @@ export const WaiterProfileScreen: React.FC<WaiterProfileScreenProps> = ({ waiter
       {/* Numpad & Action - Fixed Bottom Sheet */}
       <div className="absolute bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl rounded-t-[32px] border-t border-border shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-20 pb-10 pt-4">
         <div className="w-12 h-1.5 bg-muted rounded-full mx-auto mb-6" />
-        
+
         <div className="px-6 flex flex-col gap-6">
-          <Numpad 
-            onKeyPress={handleKeyPress} 
-            onDelete={handleDelete} 
+          <Numpad
+            onKeyPress={handleKeyPress}
+            onDelete={handleDelete}
             className="mb-2"
           />
-          
-          <Button 
-            fullWidth 
-            size="lg" 
+
+          <Button
+            fullWidth
+            size="lg"
             disabled={!amountStr || parseFloat(amountStr) <= 0}
             onClick={handleProceed}
             className="h-16 text-xl font-bold shadow-xl shadow-primary/20 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground transform active:scale-[0.98] transition-all"

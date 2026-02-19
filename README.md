@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # TIP - Digital Tipping Platform
 
 A mobile-first web application for tipping waiters via UPI.
@@ -32,3 +33,6 @@ Build the project:
 npm run build
 ```
 Deploy the `dist` folder to Vercel, Netlify, or GitHub Pages.
+=======
+# tipp
+>>>>>>> ac02385d640e06ff5492821d11c834bf79f7d4f7

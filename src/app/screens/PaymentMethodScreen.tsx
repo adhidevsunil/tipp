@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft, CheckCircle2 } from 'lucide-react';
-import { Button } from '../components/ui/Button';
+import { Button } from '../components/ui/button';
 import { Waiter, PaymentMethod } from '../types';
 import { paymentMethods, addTransaction } from '../data';
 

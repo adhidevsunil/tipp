@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Card } from '../components/ui/Card';
-import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/Avatar';
+import { Card } from '../components/ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/avatar';
 import { Waiter } from '../types';
 import { getWaiters } from '../data';
 import { Search } from 'lucide-react';

@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Waiter, Transaction } from '../types';
 import { getWaiters, addWaiter, updateWaiter, deleteWaiter, getTransactions } from '../data';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
-import { Card } from '../components/ui/Card';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Card } from '../components/ui/card';
 import { Trash2, Edit, Plus, Download, LogOut, Save, X } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/Avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 
 interface AdminScreenProps {
     onBack: () => void;
