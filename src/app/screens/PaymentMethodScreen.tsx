@@ -31,8 +31,8 @@ export const PaymentMethodScreen: React.FC<PaymentMethodScreenProps> = ({ amount
         // Format amount with exactly 2 decimal places to prevent parsing bugs in UPI apps
         const formattedAmount = amount.toFixed(2);
 
-        // Base params with tr, strict am, and fallback metadata to bypass GPay P2P intent blocks
-        const params = `pa=${waiter.upiId}&pn=${encodeURIComponent(waiter.name)}&tr=${transactionRef}&am=${formattedAmount}&cu=INR&mc=0000&mode=02&purpose=00`;
+        // Base params with tr and strict am formatting. Removed mc/mode to avoid P2P QR scanning errors.
+        const params = `pa=${waiter.upiId}&pn=${encodeURIComponent(waiter.name)}&tr=${transactionRef}&am=${formattedAmount}&cu=INR`;
 
         let upiLink = `upi://pay?${params}`;
 
