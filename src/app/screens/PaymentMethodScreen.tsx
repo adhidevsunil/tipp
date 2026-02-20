@@ -4,6 +4,7 @@ import { ChevronLeft, CheckCircle2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Waiter, PaymentMethod } from '../types';
 import { paymentMethods, addTransaction } from '../data';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface PaymentMethodScreenProps {
   amount: number;
@@ -15,6 +16,7 @@ interface PaymentMethodScreenProps {
 export const PaymentMethodScreen: React.FC<PaymentMethodScreenProps> = ({ amount, waiter, onBack, onPay }) => {
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [generatedUpiLink, setGeneratedUpiLink] = useState<string | null>(null);
 
   const handleSelect = (id: string) => {
     setSelectedMethod(id);
@@ -49,6 +51,9 @@ export const PaymentMethodScreen: React.FC<PaymentMethodScreenProps> = ({ amount
         // Open UPI app
         window.location.href = upiLink;
 
+        // Save link for QR code
+        setGeneratedUpiLink(upiLink);
+
         // Show confirmation dialog instead of auto-proceeding
         setShowConfirmation(true);
       }
@@ -74,34 +79,46 @@ export const PaymentMethodScreen: React.FC<PaymentMethodScreenProps> = ({ amount
     }
   };
 
-  if (showConfirmation) {
+  if (showConfirmation && generatedUpiLink) {
     return (
-      <div className="flex flex-col h-full bg-background px-6 justify-center items-center text-center">
-        <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 animate-pulse">
-          <div className="w-12 h-12 bg-primary rounded-full" />
-        </div>
-        <h2 className="text-2xl font-bold mb-2">Complete Payment</h2>
-        <p className="text-muted-foreground mb-8">
-          Please complete the payment in your UPI app. Once done, confirm below.
+      <div className="flex flex-col h-full bg-background px-6 justify-center items-center text-center overflow-y-auto py-8">
+        <h2 className="text-2xl font-bold mb-2">Scan to Pay</h2>
+        <p className="text-muted-foreground mb-6 text-sm max-w-xs">
+          If your UPI app didn't open automatically, please scan this QR code with any UPI scanner.
         </p>
 
-        <Button
-          fullWidth
-          size="lg"
-          onClick={handleConfirmed}
-          className="mb-4 bg-primary text-primary-foreground hover:bg-primary/90"
-        >
-          I have paid ₹{amount}
-        </Button>
+        <div className="bg-white p-4 rounded-xl shadow-lg border border-border mb-8">
+          <QRCodeSVG value={generatedUpiLink} size={220} />
+        </div>
 
-        <Button
-          fullWidth
-          variant="outline"
-          onClick={() => setShowConfirmation(false)}
-          className="border-border text-foreground hover:bg-muted"
-        >
-          Cancel / Retry
-        </Button>
+        <div className="w-full max-w-sm space-y-3">
+          <Button
+            fullWidth
+            onClick={() => window.location.href = generatedUpiLink}
+            variant="outline"
+            className="border-primary text-primary hover:bg-primary/5 h-12"
+          >
+            Retry Opening App
+          </Button>
+
+          <Button
+            fullWidth
+            size="lg"
+            onClick={handleConfirmed}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 h-14 text-lg shadow-md"
+          >
+            I have paid ₹{amount}
+          </Button>
+
+          <Button
+            fullWidth
+            variant="ghost"
+            onClick={() => setShowConfirmation(false)}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            Cancel / Change Method
+          </Button>
+        </div>
       </div>
     );
   }
