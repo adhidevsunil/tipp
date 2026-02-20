@@ -24,8 +24,13 @@ export const PaymentMethodScreen: React.FC<PaymentMethodScreenProps> = ({ amount
     if (selectedMethod) {
       const method = paymentMethods.find(m => m.id === selectedMethod);
       if (method) {
-        // Base params
-        const params = `pa=${waiter.upiId}&pn=${encodeURIComponent(waiter.name)}&am=${amount}&cu=INR`;
+        // Generate a unique transaction reference for tracking
+        const transactionRef = `TZ${Date.now()}`;
+        // Format amount with exactly 2 decimal places to prevent parsing bugs in UPI apps
+        const formattedAmount = amount.toFixed(2);
+
+        // Base params with tr, strict am, and fallback metadata to bypass GPay P2P intent blocks
+        const params = `pa=${waiter.upiId}&pn=${encodeURIComponent(waiter.name)}&tr=${transactionRef}&am=${formattedAmount}&cu=INR&mc=0000&mode=02&purpose=00`;
 
         let upiLink = `upi://pay?${params}`;
 
