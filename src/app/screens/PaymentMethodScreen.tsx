@@ -27,14 +27,8 @@ export const PaymentMethodScreen: React.FC<PaymentMethodScreenProps> = ({ amount
       const method = paymentMethods.find(m => m.id === selectedMethod);
       if (method) {
         if (selectedMethod === 'dummy_upi' || selectedMethod === 'dummy_card') {
-          // Immediately confirm for dummy methods
-          addTransaction({
-            waiterId: waiter.id,
-            waiterName: waiter.name,
-            amount: amount,
-            method: method.name,
-          });
-          onPay(method);
+          // Show under development message instead of proceeding
+          alert('This payment method is currently under development. Please choose another method.');
           return;
         }
 
