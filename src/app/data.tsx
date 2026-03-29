@@ -1,5 +1,6 @@
 import { Waiter, PaymentMethod, Transaction } from './types';
 import { GooglePayIcon, PhonePeIcon, PaytmIcon } from './components/ui/PaymentIcons';
+import { QrCode } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 
 // Initial Mock Data
@@ -107,6 +108,12 @@ export const addTransaction = (transaction: Omit<Transaction, 'id' | 'timestamp'
 };
 
 export const paymentMethods: PaymentMethod[] = [
+  {
+    id: 'qrcode',
+    name: 'Show QR Code',
+    icon: <QrCode className="w-8 h-8" />,
+    color: 'bg-white text-gray-800 border-gray-100 hover:bg-gray-50',
+  },
   {
     id: 'gpay',
     name: 'Google Pay',

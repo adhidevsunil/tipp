@@ -49,7 +49,9 @@ export const PaymentMethodScreen: React.FC<PaymentMethodScreenProps> = ({ amount
         // to avoid the "WhatsApp redirect" issue on iOS.
 
         // Open UPI app
-        window.location.href = upiLink;
+        if (selectedMethod !== 'qrcode') {
+          window.location.href = upiLink;
+        }
 
         // Save link for QR code
         setGeneratedUpiLink(upiLink);
@@ -92,14 +94,16 @@ export const PaymentMethodScreen: React.FC<PaymentMethodScreenProps> = ({ amount
         </div>
 
         <div className="w-full max-w-sm space-y-3">
-          <Button
-            fullWidth
-            onClick={() => window.location.href = generatedUpiLink}
-            variant="outline"
-            className="border-primary text-primary hover:bg-primary/5 h-12"
-          >
-            Retry Opening App
-          </Button>
+          {selectedMethod !== 'qrcode' && (
+            <Button
+              fullWidth
+              onClick={() => window.location.href = generatedUpiLink}
+              variant="outline"
+              className="border-primary text-primary hover:bg-primary/5 h-12"
+            >
+              Retry Opening App
+            </Button>
+          )}
 
           <Button
             fullWidth
