@@ -26,6 +26,18 @@ export const PaymentMethodScreen: React.FC<PaymentMethodScreenProps> = ({ amount
     if (selectedMethod) {
       const method = paymentMethods.find(m => m.id === selectedMethod);
       if (method) {
+        if (selectedMethod === 'dummy_upi' || selectedMethod === 'dummy_card') {
+          // Immediately confirm for dummy methods
+          addTransaction({
+            waiterId: waiter.id,
+            waiterName: waiter.name,
+            amount: amount,
+            method: method.name,
+          });
+          onPay(method);
+          return;
+        }
+
         // Generate a unique transaction reference for tracking
         const transactionRef = `TZ${Date.now()}`;
         // Format amount with exactly 2 decimal places to prevent parsing bugs in UPI apps
@@ -35,15 +47,6 @@ export const PaymentMethodScreen: React.FC<PaymentMethodScreenProps> = ({ amount
         const params = `pa=${waiter.upiId}&pn=${encodeURIComponent(waiter.name)}&tr=${transactionRef}&am=${formattedAmount}&cu=INR`;
 
         let upiLink = `upi://pay?${params}`;
-
-        // iOS/Android specific schemes to prevent defaulting to wrong app (like WhatsApp)
-        if (selectedMethod === 'gpay') {
-          upiLink = `gpay://upi/pay?${params}`;
-        } else if (selectedMethod === 'phonepe') {
-          upiLink = `phonepe://pay?${params}`;
-        } else if (selectedMethod === 'paytm') {
-          upiLink = `paytmmp://pay?${params}`;
-        }
 
         // Fallback for generic UPI if needed, but specific schemes appear to be what's requested
         // to avoid the "WhatsApp redirect" issue on iOS.

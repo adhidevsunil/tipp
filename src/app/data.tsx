@@ -1,6 +1,5 @@
 import { Waiter, PaymentMethod, Transaction } from './types';
-import { GooglePayIcon, PhonePeIcon, PaytmIcon } from './components/ui/PaymentIcons';
-import { QrCode } from 'lucide-react';
+import { QrCode, Smartphone, CreditCard } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 
 // Initial Mock Data
@@ -115,21 +114,15 @@ export const paymentMethods: PaymentMethod[] = [
     color: 'bg-white text-gray-800 border-gray-100 hover:bg-gray-50',
   },
   {
-    id: 'gpay',
-    name: 'Google Pay',
-    icon: <GooglePayIcon className="w-8 h-8" />,
+    id: 'dummy_upi',
+    name: 'UPI (Under Development)',
+    icon: <Smartphone className="w-8 h-8" />,
     color: 'bg-white text-gray-800 border-gray-100 hover:bg-gray-50',
   },
   {
-    id: 'phonepe',
-    name: 'PhonePe',
-    icon: <PhonePeIcon className="w-8 h-8" />,
-    color: 'bg-[#5F259F] text-white hover:bg-[#4d1e82]',
-  },
-  {
-    id: 'paytm',
-    name: 'Paytm',
-    icon: <PaytmIcon className="w-12 h-8" />, // Paytm logo is wider
-    color: 'bg-white text-[#002E6E] border-gray-100 hover:bg-gray-50',
+    id: 'dummy_card',
+    name: 'Card Payment',
+    icon: <CreditCard className="w-8 h-8" />,
+    color: 'bg-white text-gray-800 border-gray-100 hover:bg-gray-50',
   },
 ];
