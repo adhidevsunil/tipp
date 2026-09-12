@@ -153,3 +153,27 @@ export const recordVisit = async (): Promise<number> => {
 
   return count;
 };
+
+// --- ADMIN SECURITY ---
+
+const STORAGE_KEY_ADMIN_HASH = 'tipp_admin_hash';
+// Default SHA-256 hash for 'admin123'
+const DEFAULT_ADMIN_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+
+export const hashPassword = async (pwd: string): Promise<string> => {
+  const msgBuffer = new TextEncoder().encode(pwd);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+};
+
+export const verifyAdminPassword = async (inputPwd: string): Promise<boolean> => {
+  const storedHash = localStorage.getItem(STORAGE_KEY_ADMIN_HASH) || DEFAULT_ADMIN_HASH;
+  const inputHash = await hashPassword(inputPwd);
+  return inputHash === storedHash;
+};
+
+export const updateAdminPassword = async (newPwd: string): Promise<void> => {
+  const newHash = await hashPassword(newPwd);
+  localStorage.setItem(STORAGE_KEY_ADMIN_HASH, newHash);
+};

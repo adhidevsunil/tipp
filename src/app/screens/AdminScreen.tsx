@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Waiter, Transaction } from '../types';
-import { getWaiters, addWaiter, updateWaiter, deleteWaiter, getTransactions, getVisitCount, recordVisit } from '../data';
+import { getWaiters, addWaiter, updateWaiter, deleteWaiter, getTransactions, getVisitCount, recordVisit, verifyAdminPassword, updateAdminPassword } from '../data';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card } from '../components/ui/card';
-import { Trash2, Edit, Plus, Download, LogOut, Save, X, User, Eye, Users, TrendingUp } from 'lucide-react';
+import { Trash2, Edit, Plus, Download, LogOut, Save, X, User, Eye, Users, TrendingUp, KeyRound, ShieldCheck, Lock } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 
 interface AdminScreenProps {
@@ -13,9 +13,20 @@ interface AdminScreenProps {
 }
 
 export const AdminScreen: React.FC<AdminScreenProps> = ({ onBack }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+        return sessionStorage.getItem('tipp_admin_session') === 'true';
+    });
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [failedAttempts, setFailedAttempts] = useState<number>(0);
+    const [lockoutRemaining, setLockoutRemaining] = useState<number>(0);
+
+    // Change Password Modal
+    const [showChangePwd, setShowChangePwd] = useState(false);
+    const [newPwd, setNewPwd] = useState('');
+    const [confirmPwd, setConfirmPwd] = useState('');
+    const [pwdMsg, setPwdMsg] = useState('');
+
     const [waiters, setWaiters] = useState<Waiter[]>([]);
     const [visitCount, setVisitCount] = useState<number>(getVisitCount());
     const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -30,6 +41,17 @@ export const AdminScreen: React.FC<AdminScreenProps> = ({ onBack }) => {
         }
     }, [isAuthenticated]);
 
+    // Handle lockout countdown
+    useEffect(() => {
+        let timer: any;
+        if (lockoutRemaining > 0) {
+            timer = setInterval(() => {
+                setLockoutRemaining(prev => Math.max(0, prev - 1));
+            }, 1000);
+        }
+        return () => clearInterval(timer);
+    }, [lockoutRemaining]);
+
     const loadWaiters = () => {
         setWaiters(getWaiters());
     };
@@ -40,13 +62,50 @@ export const AdminScreen: React.FC<AdminScreenProps> = ({ onBack }) => {
         setVisitCount(count);
     };
 
-    const handleLogin = () => {
-        if (password === 'admin123') {
+    const handleLogin = async () => {
+        if (lockoutRemaining > 0) return;
+
+        const isValid = await verifyAdminPassword(password);
+        if (isValid) {
             setIsAuthenticated(true);
+            sessionStorage.setItem('tipp_admin_session', 'true');
             setError('');
+            setFailedAttempts(0);
+            setPassword('');
         } else {
-            setError('Incorrect password');
+            const nextAttempts = failedAttempts + 1;
+            setFailedAttempts(nextAttempts);
+            if (nextAttempts >= 5) {
+                setLockoutRemaining(300); // 5 minutes lockout
+                setError('Too many failed attempts. Locked for 5 minutes.');
+            } else {
+                setError(`Incorrect password. ${5 - nextAttempts} attempts remaining.`);
+            }
         }
+    };
+
+    const handleLogout = () => {
+        sessionStorage.removeItem('tipp_admin_session');
+        setIsAuthenticated(false);
+    };
+
+    const handleChangePassword = async () => {
+        if (!newPwd || newPwd.length < 6) {
+            setPwdMsg('Password must be at least 6 characters.');
+            return;
+        }
+        if (newPwd !== confirmPwd) {
+            setPwdMsg('Passwords do not match.');
+            return;
+        }
+        await updateAdminPassword(newPwd);
+        setPwdMsg('Password updated successfully!');
+        setTimeout(() => {
+            setShowChangePwd(false);
+            setNewPwd('');
+            setConfirmPwd('');
+            setPwdMsg('');
+        }, 1500);
     };
 
     const handleSave = () => {
@@ -103,33 +162,93 @@ export const AdminScreen: React.FC<AdminScreenProps> = ({ onBack }) => {
 
     if (!isAuthenticated) {
         return (
-            <div className="flex flex-col items-center justify-center h-full p-6">
-                <Card className="w-full max-w-sm p-6 space-y-4">
-                    <h1 className="text-2xl font-bold text-center">Admin Login</h1>
-                    <Input
-                        type="password"
-                        placeholder="Enter Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    {error && <p className="text-red-500 text-sm">{error}</p>}
-                    <Button onClick={handleLogin} className="w-full">Login</Button>
-                    <Button variant="outline" onClick={() => window.location.href = '/'} className="w-full">Back to App</Button>
+            <div className="flex flex-col items-center justify-center h-full p-6 bg-slate-100">
+                <Card className="w-full max-w-sm p-6 space-y-4 bg-white shadow-xl border border-slate-200">
+                    <div className="flex flex-col items-center text-center space-y-2">
+                        <div className="p-3 bg-primary/10 rounded-full text-primary">
+                            <Lock className="w-6 h-6" />
+                        </div>
+                        <h1 className="text-2xl font-bold">Secure Admin Access</h1>
+                        <p className="text-xs text-muted-foreground">Protected management portal</p>
+                    </div>
+
+                    <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="space-y-4">
+                        <Input
+                            type="password"
+                            placeholder="Enter Admin Password"
+                            value={password}
+                            disabled={lockoutRemaining > 0}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="text-center"
+                        />
+                        {error && <p className="text-red-500 text-xs text-center font-medium">{error}</p>}
+                        {lockoutRemaining > 0 && (
+                            <p className="text-amber-600 text-xs text-center font-bold">
+                                Try again in {Math.floor(lockoutRemaining / 60)}m {lockoutRemaining % 60}s
+                            </p>
+                        )}
+                        <Button type="submit" disabled={lockoutRemaining > 0} className="w-full h-11">
+                            Verify & Enter
+                        </Button>
+                    </form>
+                    <Button variant="ghost" size="sm" onClick={() => window.location.href = '/'} className="w-full text-xs">
+                        Back to Home
+                    </Button>
                 </Card>
             </div>
         );
     }
 
     return (
-        <div className="h-full flex flex-col bg-slate-50 overflow-hidden">
+        <div className="h-full flex flex-col bg-slate-50 overflow-hidden relative">
+            {showChangePwd && (
+                <div className="absolute inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                    <Card className="w-full max-w-sm p-6 space-y-4 bg-white shadow-xl">
+                        <div className="flex justify-between items-center">
+                            <h3 className="font-bold text-lg">Change Admin Password</h3>
+                            <Button variant="ghost" size="sm" onClick={() => setShowChangePwd(false)}>
+                                <X className="w-4 h-4" />
+                            </Button>
+                        </div>
+                        <Input
+                            type="password"
+                            placeholder="New Password (min 6 chars)"
+                            value={newPwd}
+                            onChange={(e) => setNewPwd(e.target.value)}
+                        />
+                        <Input
+                            type="password"
+                            placeholder="Confirm New Password"
+                            value={confirmPwd}
+                            onChange={(e) => setConfirmPwd(e.target.value)}
+                        />
+                        {pwdMsg && <p className={`text-xs text-center font-medium ${pwdMsg.includes('success') ? 'text-emerald-600' : 'text-red-500'}`}>{pwdMsg}</p>}
+                        <div className="flex gap-2 pt-2">
+                            <Button onClick={handleChangePassword} className="flex-1">
+                                Update Password
+                            </Button>
+                            <Button variant="outline" onClick={() => setShowChangePwd(false)} className="flex-1">
+                                Cancel
+                            </Button>
+                        </div>
+                    </Card>
+                </div>
+            )}
+
             <header className="bg-white p-4 shadow-sm flex justify-between items-center z-10">
-                <h1 className="text-xl font-bold">Admin Panel</h1>
+                <div className="flex items-center space-x-2">
+                    <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                    <h1 className="text-xl font-bold">Admin Panel</h1>
+                </div>
                 <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => setShowChangePwd(true)} title="Change Password">
+                        <KeyRound className="w-4 h-4" />
+                    </Button>
                     <Button variant="outline" size="sm" onClick={downloadTransactions} title="Export CSV">
                         <Download className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => window.location.href = '/'}>
-                        <LogOut className="w-4 h-4" />
+                    <Button variant="ghost" size="sm" onClick={handleLogout} title="Logout">
+                        <LogOut className="w-4 h-4 text-red-500" />
                     </Button>
                 </div>
             </header>
