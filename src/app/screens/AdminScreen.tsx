@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Waiter, Transaction } from '../types';
-import { getWaiters, addWaiter, updateWaiter, deleteWaiter, getTransactions } from '../data';
+import { getWaiters, addWaiter, updateWaiter, deleteWaiter, getTransactions, getVisitCount, recordVisit } from '../data';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card } from '../components/ui/card';
-import { Trash2, Edit, Plus, Download, LogOut, Save, X, User } from 'lucide-react';
+import { Trash2, Edit, Plus, Download, LogOut, Save, X, User, Eye, Users, TrendingUp } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 
 interface AdminScreenProps {
@@ -17,6 +17,8 @@ export const AdminScreen: React.FC<AdminScreenProps> = ({ onBack }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [waiters, setWaiters] = useState<Waiter[]>([]);
+    const [visitCount, setVisitCount] = useState<number>(getVisitCount());
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [newWaiter, setNewWaiter] = useState<Partial<Waiter>>({});
     const [isAdding, setIsAdding] = useState(false);
@@ -24,11 +26,18 @@ export const AdminScreen: React.FC<AdminScreenProps> = ({ onBack }) => {
     useEffect(() => {
         if (isAuthenticated) {
             loadWaiters();
+            loadAnalytics();
         }
     }, [isAuthenticated]);
 
     const loadWaiters = () => {
         setWaiters(getWaiters());
+    };
+
+    const loadAnalytics = async () => {
+        setTransactions(getTransactions());
+        const count = await recordVisit();
+        setVisitCount(count);
     };
 
     const handleLogin = () => {
@@ -126,7 +135,34 @@ export const AdminScreen: React.FC<AdminScreenProps> = ({ onBack }) => {
             </header>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                <div className="flex justify-between items-center">
+                {/* Analytics & Visitor Stats */}
+                <div className="grid grid-cols-3 gap-2">
+                    <Card className="p-3 bg-white border border-primary/20 flex flex-col items-center justify-center text-center shadow-sm">
+                        <div className="p-2 rounded-full bg-primary/10 text-primary mb-1">
+                            <Eye className="w-4 h-4" />
+                        </div>
+                        <span className="text-lg font-bold text-foreground">{visitCount}</span>
+                        <span className="text-[10px] text-muted-foreground uppercase font-medium">Website Visits</span>
+                    </Card>
+
+                    <Card className="p-3 bg-white border border-border flex flex-col items-center justify-center text-center shadow-sm">
+                        <div className="p-2 rounded-full bg-emerald-50 text-emerald-600 mb-1">
+                            <TrendingUp className="w-4 h-4" />
+                        </div>
+                        <span className="text-lg font-bold text-foreground">{transactions.length}</span>
+                        <span className="text-[10px] text-muted-foreground uppercase font-medium">Tips Received</span>
+                    </Card>
+
+                    <Card className="p-3 bg-white border border-border flex flex-col items-center justify-center text-center shadow-sm">
+                        <div className="p-2 rounded-full bg-blue-50 text-blue-600 mb-1">
+                            <Users className="w-4 h-4" />
+                        </div>
+                        <span className="text-lg font-bold text-foreground">{waiters.length}</span>
+                        <span className="text-[10px] text-muted-foreground uppercase font-medium">Active Staff</span>
+                    </Card>
+                </div>
+
+                <div className="flex justify-between items-center pt-2">
                     <h2 className="text-lg font-semibold">Waiters</h2>
                     <Button size="sm" onClick={() => { setIsAdding(true); setNewWaiter({}); setEditingId(null); }}>
                         <Plus className="w-4 h-4 mr-1" /> Add New

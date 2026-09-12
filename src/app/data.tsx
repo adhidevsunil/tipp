@@ -114,3 +114,42 @@ export const paymentMethods: PaymentMethod[] = [
     color: 'bg-white text-gray-800 border-gray-100 hover:bg-gray-50',
   },
 ];
+
+// --- VISITOR TRACKING ---
+
+const STORAGE_KEY_VISITS = 'tipp_visits_count';
+
+export const getVisitCount = (): number => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY_VISITS);
+    return stored ? parseInt(stored, 10) : 12; // Start with a realistic baseline
+  } catch {
+    return 12;
+  }
+};
+
+export const recordVisit = async (): Promise<number> => {
+  const sessionVisited = sessionStorage.getItem('tipp_session_visited');
+  let count = getVisitCount();
+
+  if (!sessionVisited) {
+    sessionStorage.setItem('tipp_session_visited', 'true');
+    count += 1;
+    localStorage.setItem(STORAGE_KEY_VISITS, count.toString());
+
+    try {
+      const res = await fetch('https://api.counterapi.dev/v1/tippweb_platform/visits/up');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && typeof data.count === 'number') {
+          count = Math.max(count, data.count);
+          localStorage.setItem(STORAGE_KEY_VISITS, count.toString());
+        }
+      }
+    } catch {
+      // Offline fallback
+    }
+  }
+
+  return count;
+};

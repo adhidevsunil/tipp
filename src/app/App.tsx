@@ -9,6 +9,8 @@ import { ErrorScreen } from './screens/ErrorScreen';
 import { AdminScreen } from './screens/AdminScreen';
 import { AnimatePresence, motion } from 'motion/react';
 
+import { recordVisit } from './data';
+
 export default function App() {
   const [screen, setScreen] = useState<Screen>('SPLASH');
   const [selectedWaiter, setSelectedWaiter] = useState<Waiter | null>(null);
@@ -17,6 +19,9 @@ export default function App() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
 
   React.useEffect(() => {
+    // Record website visit
+    recordVisit();
+
     // Check if user is trying to access admin panel via URL
     if (window.location.pathname === '/admin') {
       setScreen('ADMIN');
