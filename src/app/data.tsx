@@ -1,5 +1,5 @@
 import { Waiter, PaymentMethod, Transaction } from './types';
-import { QrCode, Smartphone, CreditCard } from 'lucide-react';
+import { QrCode } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 
 // Initial Mock Data
@@ -8,7 +8,7 @@ const INITIAL_WAITERS: Waiter[] = [
     id: '1',
     name: 'Rajesh Kumar',
     role: 'Senior Server',
-    imageUrl: 'https://images.unsplash.com/photo-1612190219911-286df0e14656?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzbWlsaW5nJTIwd2FpdGVyJTIwcG9ydHJhaXQlMjBjbG9zZSUyMHVwfGVufDF8fHx8MTc3MTQxOTE1Mnww&ixlib=rb-4.1.0&q=80&w=1080',
+    imageUrl: '',
     message: 'Always happy to serve with a smile.',
     upiId: 'ambilisunil083@oksbi',
   },
@@ -16,7 +16,7 @@ const INITIAL_WAITERS: Waiter[] = [
     id: '2',
     name: 'Sarah Chen',
     role: 'Waitress',
-    imageUrl: 'https://images.unsplash.com/photo-1767976517374-3a917cc30dea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmcmllbmRseSUyMHdhaXRyZXNzJTIwcG9ydHJhaXQlMjByZXN0YXVyYW50fGVufDF8fHx8MTc3MTQxOTE1Mnww&ixlib=rb-4.1.0&q=80&w=1080',
+    imageUrl: '',
     message: 'Hope you enjoyed your meal!',
     upiId: 'adhidevksunilk@oksbi',
   },
@@ -24,7 +24,7 @@ const INITIAL_WAITERS: Waiter[] = [
     id: '3',
     name: 'David Lee',
     role: 'Server',
-    imageUrl: 'https://images.unsplash.com/photo-1641740634126-7399e808aaa3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMGFzaWFuJTIwd2FpdGVyJTIwcG9ydHJhaXR8ZW58MXx8fHwxNzcxNDE5MTUyfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    imageUrl: '',
     message: 'Let me know if you need anything else.',
     upiId: 'david@oksbi',
   },
@@ -32,7 +32,7 @@ const INITIAL_WAITERS: Waiter[] = [
     id: '4',
     name: 'Marco Rossi',
     role: 'Head Waiter',
-    imageUrl: 'https://images.unsplash.com/photo-1763590373020-5e3d3352e7f5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzZW5pb3IlMjB3YWl0ZXIlMjBwb3J0cmFpdCUyMHByb2Zlc3Npb25hbHxlbnwxfHx8fDE3NzE0MTkxNTJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    imageUrl: '',
     message: 'Thank you for dining with us.',
     upiId: 'marco@okhdfc',
   },
@@ -108,21 +108,9 @@ export const addTransaction = (transaction: Omit<Transaction, 'id' | 'timestamp'
 
 export const paymentMethods: PaymentMethod[] = [
   {
-    id: 'qrcode',
-    name: 'Show QR Code',
+    id: 'upi',
+    name: 'UPI Payment',
     icon: <QrCode className="w-8 h-8" />,
-    color: 'bg-white text-gray-800 border-gray-100 hover:bg-gray-50',
-  },
-  {
-    id: 'dummy_upi',
-    name: 'UPI (Under Development)',
-    icon: <Smartphone className="w-8 h-8" />,
-    color: 'bg-white text-gray-800 border-gray-100 hover:bg-gray-50',
-  },
-  {
-    id: 'dummy_card',
-    name: 'Card Payment',
-    icon: <CreditCard className="w-8 h-8" />,
     color: 'bg-white text-gray-800 border-gray-100 hover:bg-gray-50',
   },
 ];

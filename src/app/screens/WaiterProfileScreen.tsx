@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft, MessageSquarePlus } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import { Numpad } from '../components/ui/Numpad';
 import { Waiter } from '../types';
 
@@ -64,17 +63,7 @@ export const WaiterProfileScreen: React.FC<WaiterProfileScreenProps> = ({ waiter
           animate={{ y: 0, opacity: 1 }}
           className="flex flex-col items-center mb-8"
         >
-          <div className="absolute -bottom-16 left-1/2 -translate-x-1/2">
-            <div className="p-1.5 bg-background rounded-full shadow-xl">
-              <Avatar className="w-32 h-32 border-4 border-white shadow-sm">
-                <AvatarImage src={waiter.imageUrl} alt={waiter.name} className="object-cover" />
-                <AvatarFallback className="text-4xl bg-primary/10 text-primary">
-                  {waiter.name.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-          </div>
-          <h2 className="text-xl font-semibold text-foreground">{waiter.name}</h2>
+          <h2 className="text-2xl font-bold text-foreground">{waiter.name}</h2>
           <p className="text-sm text-primary font-medium bg-primary/10 px-3 py-1 rounded-full mt-1">{waiter.role}</p>
         </motion.div>
 

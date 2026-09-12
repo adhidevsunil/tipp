@@ -1,7 +1,5 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Card } from '../components/ui/card';
-import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/avatar';
 import { Waiter } from '../types';
 import { getWaiters } from '../data';
 import { Search } from 'lucide-react';
@@ -78,18 +76,11 @@ export const WaiterListScreen: React.FC<WaiterListScreenProps> = ({ onSelect }) 
               whileTap={{ scale: 0.95 }}
               className="cursor-pointer"
             >
-              <div className="flex flex-col items-center p-5 text-center h-full bg-card hover:bg-muted/50 border border-border rounded-2xl transition-colors shadow-sm relative overflow-hidden group">
+              <div className="flex flex-col items-center justify-center p-6 text-center h-full bg-card hover:bg-muted/50 border border-border rounded-2xl transition-colors shadow-sm relative overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                <div className="p-1 rounded-full border border-primary/20 mb-3 relative z-10">
-                  <Avatar>
-                    <AvatarImage src={waiter.imageUrl} alt={waiter.name} />
-                    <AvatarFallback>{waiter.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                </div>
-
-                <h3 className="font-semibold text-foreground text-sm leading-tight mb-1 relative z-10">{waiter.name}</h3>
-                <span className="text-xs text-primary font-medium bg-primary/10 px-2 py-0.5 rounded-full relative z-10">{waiter.role}</span>
+                <h3 className="font-semibold text-foreground text-base leading-tight mb-2 relative z-10">{waiter.name}</h3>
+                <span className="text-xs text-primary font-medium bg-primary/10 px-3 py-1 rounded-full relative z-10">{waiter.role}</span>
               </div>
             </motion.div>
           ))

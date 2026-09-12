@@ -14,7 +14,7 @@ interface PaymentMethodScreenProps {
 }
 
 export const PaymentMethodScreen: React.FC<PaymentMethodScreenProps> = ({ amount, waiter, onBack, onPay }) => {
-  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
+  const [selectedMethod, setSelectedMethod] = useState<string | null>('upi');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [generatedUpiLink, setGeneratedUpiLink] = useState<string | null>(null);
 
@@ -26,42 +26,26 @@ export const PaymentMethodScreen: React.FC<PaymentMethodScreenProps> = ({ amount
     if (selectedMethod) {
       const method = paymentMethods.find(m => m.id === selectedMethod);
       if (method) {
-        if (selectedMethod === 'dummy_upi' || selectedMethod === 'dummy_card') {
-          // Show under development message instead of proceeding
-          alert('This payment method is currently under development. Please choose another method.');
-          return;
-        }
-
         // Generate a unique transaction reference for tracking
         const transactionRef = `TZ${Date.now()}`;
         // Format amount with exactly 2 decimal places to prevent parsing bugs in UPI apps
         const formattedAmount = amount.toFixed(2);
 
-        // Base params with tr and strict am formatting. Removed mc/mode to avoid P2P QR scanning errors.
+        // Base params with tr and strict am formatting
         const params = `pa=${waiter.upiId}&pn=${encodeURIComponent(waiter.name)}&tr=${transactionRef}&am=${formattedAmount}&cu=INR`;
+        const upiLink = `upi://pay?${params}`;
 
-        let upiLink = `upi://pay?${params}`;
-
-        // Fallback for generic UPI if needed, but specific schemes appear to be what's requested
-        // to avoid the "WhatsApp redirect" issue on iOS.
-
-        // Open UPI app
-        if (selectedMethod !== 'qrcode') {
-          window.location.href = upiLink;
-        }
+        // Open UPI app on mobile
+        window.location.href = upiLink;
 
         // Save link for QR code
         setGeneratedUpiLink(upiLink);
 
-        // Show confirmation dialog instead of auto-proceeding
+        // Show confirmation dialog with QR code
         setShowConfirmation(true);
       }
     }
   };
-
-
-
-  // ... inside component ...
 
   const handleConfirmed = () => {
     const method = paymentMethods.find(m => m.id === selectedMethod);
@@ -81,9 +65,9 @@ export const PaymentMethodScreen: React.FC<PaymentMethodScreenProps> = ({ amount
   if (showConfirmation && generatedUpiLink) {
     return (
       <div className="flex flex-col h-full bg-background px-6 justify-center items-center text-center overflow-y-auto py-8">
-        <h2 className="text-2xl font-bold mb-2">Scan to Pay</h2>
+        <h2 className="text-2xl font-bold mb-2">Scan or Open App to Pay</h2>
         <p className="text-muted-foreground mb-6 text-sm max-w-xs">
-          If your UPI app didn't open automatically, please scan this QR code with any UPI scanner.
+          Scan this QR code with any UPI app (GPay, PhonePe, Paytm), or tap below to open your UPI app.
         </p>
 
         <div className="bg-white p-4 rounded-xl shadow-lg border border-border mb-8">
@@ -91,16 +75,14 @@ export const PaymentMethodScreen: React.FC<PaymentMethodScreenProps> = ({ amount
         </div>
 
         <div className="w-full max-w-sm space-y-3">
-          {selectedMethod !== 'qrcode' && (
-            <Button
-              fullWidth
-              onClick={() => window.location.href = generatedUpiLink}
-              variant="outline"
-              className="border-primary text-primary hover:bg-primary/5 h-12"
-            >
-              Retry Opening App
-            </Button>
-          )}
+          <Button
+            fullWidth
+            onClick={() => window.location.href = generatedUpiLink}
+            variant="outline"
+            className="border-primary text-primary hover:bg-primary/5 h-12"
+          >
+            Open UPI App
+          </Button>
 
           <Button
             fullWidth
