@@ -5,7 +5,8 @@ import { getWaiters, addWaiter, updateWaiter, deleteWaiter, getTransactions } fr
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card } from '../components/ui/card';
-import { Trash2, Edit, Plus, Download, LogOut, Save, X } from 'lucide-react';
+import { Trash2, Edit, Plus, Download, LogOut, Save, X, User } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 
 interface AdminScreenProps {
     onBack: () => void;
@@ -47,7 +48,7 @@ export const AdminScreen: React.FC<AdminScreenProps> = ({ onBack }) => {
                 addWaiter({
                     name: newWaiter.name!,
                     role: newWaiter.role || 'Server',
-                    imageUrl: '',
+                    imageUrl: newWaiter.imageUrl || '',
                     message: newWaiter.message || 'Happy to serve!',
                     upiId: newWaiter.upiId!,
                 });
@@ -150,6 +151,11 @@ export const AdminScreen: React.FC<AdminScreenProps> = ({ onBack }) => {
                             value={newWaiter.upiId || ''}
                             onChange={e => setNewWaiter({ ...newWaiter, upiId: e.target.value })}
                         />
+                        <Input
+                            placeholder="Image URL (Optional)"
+                            value={newWaiter.imageUrl || ''}
+                            onChange={e => setNewWaiter({ ...newWaiter, imageUrl: e.target.value })}
+                        />
                         <div className="flex gap-2 mt-2">
                             <Button onClick={handleSave} className="flex-1">
                                 <Save className="w-4 h-4 mr-2" /> Save
@@ -164,6 +170,12 @@ export const AdminScreen: React.FC<AdminScreenProps> = ({ onBack }) => {
                 <div className="space-y-3">
                     {waiters.map(waiter => (
                         <Card key={waiter.id} className="p-3 flex items-center gap-3">
+                            <Avatar className="w-10 h-10">
+                                {waiter.imageUrl ? <AvatarImage src={waiter.imageUrl} alt={waiter.name} /> : null}
+                                <AvatarFallback className="bg-slate-200">
+                                    <User className="w-5 h-5 text-slate-400" />
+                                </AvatarFallback>
+                            </Avatar>
                             <div className="flex-1 overflow-hidden">
                                 <h3 className="font-semibold truncate">{waiter.name}</h3>
                                 <p className="text-xs text-muted-foreground truncate">{waiter.role} • {waiter.upiId}</p>

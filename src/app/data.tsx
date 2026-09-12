@@ -52,9 +52,7 @@ export const getWaiters = (): Waiter[] => {
       localStorage.setItem(STORAGE_KEY_WAITERS, JSON.stringify(INITIAL_WAITERS));
       return INITIAL_WAITERS;
     }
-    const parsed: Waiter[] = JSON.parse(stored);
-    // Strip image URLs to ensure no old cached photos are displayed
-    return parsed.map(w => ({ ...w, imageUrl: '' }));
+    return JSON.parse(stored);
   } catch (error) {
     console.error("Failed to parse waiters from localStorage", error);
     // If parsing fails, reset to initial data to recover the app
